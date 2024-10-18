@@ -34,7 +34,7 @@
     </div>
     <div>
         <label for="birthday">Birthday:</label>
-        <input type="date" id="birthday" placeholder="Enter Birthday" required>
+        <input type="date" id="birthday" required>
     </div>
     <div>
         <label for="age">Age:</label>
@@ -42,7 +42,7 @@
     </div>
     <button onclick="generateQRCode()">Generate QR Code</button>
 
-    <div id="qrCode"></div>
+    <div id="qrCode"></div> <!-- QR Code will be displayed here -->
 
     <script>
         function generateQRCode() {
@@ -55,27 +55,15 @@
                 const qrData = JSON.stringify({ name, picture, birthday, age });
                 $('#qrCode').empty(); // Clear previous QR code
 
-                // Generate the QR code
+                // Generate the QR code and display it
                 $('#qrCode').qrcode({
                     text: qrData,
                     width: 200,
                     height: 200,
-                    render: 'canvas', // Render QR code on canvas
                 });
-
-                // Download the QR code after a short delay
-                setTimeout(downloadQRCode, 500); // Adjust the delay as needed
             } else {
                 alert('Please fill in all fields');
             }
-        }
-
-        function downloadQRCode() {
-            const canvas = $('#qrCode canvas')[0]; // Get the canvas element
-            const link = document.createElement('a');
-            link.href = canvas.toDataURL('image/png'); // Convert canvas to PNG
-            link.download = 'qr_code.png'; // Set the default download filename
-            link.click(); // Trigger the download
         }
     </script>
 </body>
