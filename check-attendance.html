@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check Attendance</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://unpkg.com/@zxing/library@latest"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        input, button {
+            margin: 10px;
+            padding: 10px;
+            width: 200px;
+        }
+        #qrCodeScanner {
+            display: none; /* Hidden by default */
+            margin-top: 20px;
+        }
+        #attendanceTable {
+            margin-top: 20px;
+            border-collapse: collapse;
+            width: 80%;
+            margin: 0 auto;
+        }
+        #attendanceTable th, #attendanceTable td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        #attendanceTable th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Check Attendance</h1>
+    <div>
+        <label for="idNumber">Enter ID Number:</label>
+        <input type="text" id="idNumber" placeholder="Enter ID Number">
+        <button onclick="checkAttendance()">Check Attendance</button>
+    </div>
+    <div>
+        <button onclick="startScanning()">Scan QR Code</button>
+        <div id="qrCodeScanner">
+            <video id="video" width="300" height="200"></video>
+            <button onclick="stopScanning()">Stop Scanning</button>
+        </div>
+    </div>
+    <table id="attendanceTable">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Picture URL</th>
+                <th>Birthday</th>
+                <th>Age</th>
+            </tr>
+        </thead>
+        <tbody id="attendanceBody"></tbody>
+    </table>
+
+    <script>
+        function checkAttendance() {
+            const idNumber = document.getElementById('idNumber').value;
+
+            if (idNumber) {
+                const url = 'YOUR_APPS_SCRIPT_URL'; // Replace with your Google Apps Script URL
+                $.get(url + '?idNumber=' + idNumber)
+                    .done(function(response) {
+                        const attendanceRecords = JSON.parse(response);
+                        displayAttendance(attendanceRecords);
+                    })
+                    .fail(function() {
+                        alert('Error retrieving attendance data');
+                    });
+            } else {
+                alert('Please enter an ID number');
+            }
+        }
+
+        function displayAttendance(records) {
+            const tbody = document.getElementById('attendanceBody');
+            tbody.innerHTML = ''; // Clear previous results
+
+            if (records.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4">No attendance found for this ID</td></tr>';
+            } else {
+                records.forEach(record => {
+                    const row = `<tr>
+                        <td>${record.name}</td>
+                        <td><img src="${record.picture}" alt="Preview" style="max-width:50px;"/></td>
+                        <td>${record.birthday}</td>
+                        <td>${record.age}</td>
+                    </tr>`;
+                    tbody.innerHTML += row;
+                });
+            }
+        }
+
+        function startScanning() {
+            const video = document.getElementById('video');
+            const codeReader = new ZXing.BrowserQRCodeReader();
+
+            codeReader.decodeFromVideoDevice(null, video, (result, err) => {
+                if (result) {
+                    const qrData = JSON.parse(result.text);
+                    displayAttendance([qrData]); // Display attendance for scanned QR code
+                    stopScanning();
+                }
+                if (err) {
+                    console.error(err);
+                }
+            });
+
+            document.getElementById('qrCodeScanner').style.display = 'block';
+        }
+
+        function stopScanning() {
+            document.getElementById('qrCodeScanner').style.display = 'none';
+            const video = document.getElementById('video');
+            video.srcObject.getTracks().forEach(track => track.stop());
+        }
+    </script>
+</body>
+</html>
