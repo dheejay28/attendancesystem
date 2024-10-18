@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendees</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center; /* Centering vertically */
+            height: 100vh;
+            background-color: #f4f4f4;
+            margin: 0;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 500px;
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        .attendee-profile {
+            display: flex;
+            align-items: center;
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            justify-content: space-between; /* Space between items */
+        }
+        .attendee-profile img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .present-message {
+            color: green;
+            font-weight: bold;
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+        .absent-message {
+            color: red;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .timestamp {
+            font-size: 12px; /* Smaller font size for timestamp */
+            color: #666; /* Grey color for timestamp */
+        }
+        #homeButton {
+            margin-top: 20px; /* Space for home button */
+            background-color: #525457; /* Bootstrap primary color */
+            color: white; /* White text */
+            border: none; /* No border */
+            cursor: pointer; /* Pointer cursor on hover */
+            padding: 10px; /* Padding for button */
+            border-radius: 4px; /* Rounded button corners */
+            width: 100%; /* Full width */
+        }
+        #homeButton:hover {
+            background-color: #272828; /* Darker blue on hover */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Attendees</h1>
+        <div id="attendeeList"></div> <!-- List of attendees -->
+        <button id="homeButton" onclick="location.href='index.html'">Home</button> <!-- Home button -->
+    </div>
+
+    <script>
+        function loadAttendees() {
+            const attendeeList = document.getElementById('attendeeList');
+            attendeeList.innerHTML = ''; // Clear the list
+
+            // Iterate through local storage to find attendee profiles
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                const profileData = JSON.parse(localStorage.getItem(key));
+
+                if (profileData) {
+                    const listItem = document.createElement('div');
+                    listItem.className = 'attendee-profile';
+                    const timestamp = profileData.timestamp ? `${profileData.timestamp}` : '';
+                    listItem.innerHTML = `
+                        <img src="${profileData.picture}" alt="Profile Picture">
+                        <strong>${profileData.name}</strong> ${profileData.position} <!-- Display position -->
+                        <span class="${profileData.present ? 'present-message' : 'absent-message'}">
+                            ${profileData.present ? 'Present' : 'Absent'}
+                        </span>
+                        <div class="timestamp">${timestamp}</div>
+                    `;
+                    attendeeList.appendChild(listItem); // Append to the attendee list
+                }
+            }
+        }
+
+        // Load attendees on page load
+        window.onload = loadAttendees;
+    </script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profiles</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center; /* Centering vertically */
+            height: 100vh;
+            background-color: #f4f4f4;
+            margin: 0;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 500px; /* Increased width for better layout */
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        .profile {
+            display: flex; /* Flexbox for horizontal layout */
+            align-items: center; /* Center vertically */
+            margin: 10px 0; /* Spacing between profiles */
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            justify-content: space-between; /* Space between name and button */
+        }
+        .profile img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        button {
+            background-color: #FF4136; /* Red color for remove button */
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+        button:hover {
+            background-color: #C0392B; /* Darker red on hover */
+        }
+        #homeButton {
+            margin-top: 20px; /* Space for home button */
+            background-color: #007BFF; /* Bootstrap primary color */
+            color: white; /* White text */
+            border: none; /* No border */
+            cursor: pointer; /* Pointer cursor on hover */
+            padding: 10px; /* Padding for button */
+            border-radius: 4px; /* Rounded button corners */
+            width: 100%; /* Full width */
+        }
+        #homeButton:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>User Profiles</h1>
+        <div id="profileList"></div> <!-- List of profiles -->
+        <button id="homeButton" onclick="location.href='admin.html'">Home</button> <!-- Home button -->
+    </div>
+
+    <script>
+        function loadProfiles() {
+            const profileList = document.getElementById('profileList');
+            profileList.innerHTML = ''; // Clear the list
+
+            // Iterate through local storage to find user profiles
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                const profileData = JSON.parse(localStorage.getItem(key));
+
+                if (profileData) {
+                    const profileItem = document.createElement('div');
+                    profileItem.className = 'profile';
+                    profileItem.innerHTML = `
+                        <img src="${profileData.picture}" alt="Profile Picture">
+                        <strong>${profileData.name}</strong> (Code: ${key})
+                        <button onclick="removeProfile('${key}')">Remove</button>
+                    `;
+                    profileList.appendChild(profileItem); // Append to the profile list
+                }
+            }
+        }
+
+        function removeProfile(key) {
+            localStorage.removeItem(key); // Remove from local storage
+            loadProfiles(); // Refresh the profile list
+            alert('Profile removed successfully.'); // Alert for profile removal
+        }
+
+        // Load profiles on page load
+        window.onload = loadProfiles;
+    </script>
+</body>
+</html>

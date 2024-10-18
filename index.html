@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center; /* Center items vertically */
+            height: 100vh; /* Full viewport height */
+            background-color: #f4f4f4; /* Light background color */
+            margin: 0;
+        }
+        .container {
+            background-color: #fff; /* White background for the form */
+            padding: 20px; /* Padding around the form */
+            border-radius: 8px; /* Rounded corners */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            width: 400px; /* Fixed width for the form */
+            text-align: center; /* Center text */
+        }
+        h1 {
+            margin-bottom: 20px; /* Spacing for the heading */
+        }
+        img.logo {
+            width: 100px; /* Adjust logo width */
+            height: auto; /* Maintain aspect ratio */
+            margin-bottom: 20px; /* Spacing below logo */
+        }
+        #currentDateTime {
+            margin-bottom: 20px; /* Spacing for date and time */
+            font-weight: bold; /* Make date and time bold */
+        }
+        button {
+            background-color: #525457; /* Button color */
+            color: white; /* White text for buttons */
+            border: none; /* No border for buttons */
+            cursor: pointer; /* Pointer cursor on hover */
+            padding: 6px; /* Padding for buttons */
+            border-radius: 4px; /* Rounded button corners */
+            width: 100%; /* Full width */
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #272828; /* Darker blue on hover */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+    <img src="logo.png" alt="Logo" class="logo">
+        <h1>Attendance System</h1>
+        <div id="currentDateTime"></div> <!-- Date and time display -->
+        <button onclick="location.href='check-attendance.html'">Check Attendance</button>
+        <button onclick="location.href='attendees.html'">View Attendees</button>
+        <button onclick="location.href='login.html'">Admin Login</button>
+        <button onclick="location.href='absent.html'">Log Out</button>
+    </div>
+
+    <script>
+        function updateDateTime() {
+            const now = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
+            const formattedDateTime = now.toLocaleString('en-US', options);
+            document.getElementById('currentDateTime').innerText = formattedDateTime; // Display current date and time
+        }
+
+        // Update date and time on page load
+        window.onload = updateDateTime;
+    </script>
+</body>
+</html>

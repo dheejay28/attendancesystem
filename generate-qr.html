@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Attendance Code</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4; /* Light background color */
+            margin: 0;
+        }
+        .container {
+            background-color: #fff; /* White background for the form */
+            padding: 20px;
+            border-radius: 8px; /* Rounded corners */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            width: 400px; /* Fixed width for the form */
+            text-align: center; /* Center text */
+        }
+        input, button {
+            margin: 10px 0; /* Spacing above and below inputs/buttons */
+            padding: 10px;
+            width: 100%; /* Full width */
+            border: 1px solid #ccc; /* Light gray border */
+            border-radius: 4px; /* Rounded input corners */
+            box-sizing: border-box; /* Include padding/border in element's total width/height */
+        }
+        button {
+            background-color: #007BFF; /* Bootstrap primary color */
+            color: white; /* White text for buttons */
+            border: none; /* No border for buttons */
+            cursor: pointer; /* Pointer cursor on hover */
+        }
+        button:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+        #imagePreview {
+            margin-top: 20px;
+            max-width: 100%; /* Responsive preview */
+            display: none; /* Hide by default */
+        }
+        h1 {
+            margin: 0 0 20px; /* Spacing for the heading */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Generate Attendance Code</h1>
+        <div>
+            <label for="name">Name:</label>
+            <input type="text" id="name" placeholder="Enter Name" required>
+        </div>
+        <div>
+            <label for="position">Position:</label> <!-- New position input -->
+            <input type="text" id="position" placeholder="Enter Position" required>
+        </div>
+        <div>
+            <label for="image">Upload Picture:</label>
+            <input type="file" id="image" accept="image/*" onchange="previewImage()" required>
+            <img id="imagePreview" alt="Image Preview">
+        </div>
+        <div>
+            <label for="birthday">Birthday:</label>
+            <input type="date" id="birthday" required>
+        </div>
+        <div>
+            <label for="age">Age:</label>
+            <input type="number" id="age" placeholder="Enter Age" required>
+        </div>
+        <button onclick="generateCode()">Generate Code</button>
+        <div id="generatedCode" style="margin-top: 20px;"></div>
+    </div>
+
+    <script>
+        function previewImage() {
+            const file = document.getElementById('image').files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const imgPreview = document.getElementById('imagePreview');
+                imgPreview.src = e.target.result; // Set image preview source
+                imgPreview.style.display = 'block'; // Show the image
+            };
+
+            if (file) {
+                reader.readAsDataURL(file); // Read the uploaded file as a data URL
+            }
+        }
+
+        function generateCode() {
+            const name = document.getElementById('name').value.trim();
+            const position = document.getElementById('position').value.trim(); // Get position input
+            const imageFile = document.getElementById('image').files[0];
+            const birthday = document.getElementById('birthday').value.trim();
+            const age = document.getElementById('age').value.trim();
+
+            if (name && position && imageFile && birthday && age) { // Check position input
+                const uniqueCode = 'CODE-' + Date.now(); // Create a unique code
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const profileData = { 
+                        name, 
+                        position, // Add position to profile data
+                        picture: e.target.result, 
+                        birthday, 
+                        age, 
+                        code: uniqueCode 
+                    };
+                    
+                    // Store in local storage using the unique code as the key
+                    localStorage.setItem(uniqueCode, JSON.stringify(profileData));
+
+                    // Display the generated code
+                    document.getElementById('generatedCode').innerHTML = `
+                        <h2>Generated Code:</h2>
+                        <p>${uniqueCode}</p>
+                    `;
+                };
+
+                reader.readAsDataURL(imageFile); // Read the image file as a data URL
+            } else {
+                alert('Please fill in all fields');
+            }
+        }
+    </script>
+</body>
+</html>

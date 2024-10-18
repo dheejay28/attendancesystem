@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logout</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4; /* Light background color */
+            margin: 0;
+        }
+        .container {
+            background-color: #fff; /* White background for the form */
+            padding: 20px;
+            border-radius: 8px; /* Rounded corners */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            width: 300px; /* Fixed width for the form */
+            text-align: center; /* Center text */
+        }
+        h1 {
+            margin-bottom: 20px; /* Spacing for the heading */
+        }
+        input, button {
+            margin: 10px 0; /* Spacing above and below inputs/buttons */
+            padding: 10px;
+            width: 100%; /* Full width */
+            border: 1px solid #ccc; /* Light gray border */
+            border-radius: 4px; /* Rounded input corners */
+            box-sizing: border-box; /* Include padding/border in element's total width/height */
+        }
+        button {
+            background-color: #007BFF; /* Bootstrap primary color */
+            color: white; /* White text for buttons */
+            cursor: pointer; /* Pointer cursor on hover */
+        }
+        button:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+        #result {
+            margin-top: 20px; /* Spacing for result message */
+            color: green; /* Green color for success message */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Logout</h1>
+        <input type="text" id="logoutCode" placeholder="Enter QR Code or Generated Code" required>
+        <button onclick="logout()">Logout</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        function logout() {
+            const code = document.getElementById('logoutCode').value.trim();
+            const profileData = localStorage.getItem(code);
+
+            if (profileData) {
+                // Remove the profile from local storage
+                localStorage.removeItem(code);
+
+                // Update the attendees list
+                updateAttendees();
+
+                // Display success message
+                document.getElementById('result').innerHTML = 'Successfully logged out!';
+
+                // Clear input field
+                document.getElementById('logoutCode').value = '';
+            } else {
+                alert('Invalid code. Please try again.'); // Alert for invalid code
+            }
+        }
+
+        function updateAttendees() {
+            const attendees = JSON.parse(localStorage.getItem('attendees')) || [];
+
+            // Remove the code from the attendees list
+            const code = document.getElementById('logoutCode').value.trim();
+            const index = attendees.indexOf(code);
+            if (index > -1) {
+                attendees.splice(index, 1); // Remove the code from the array
+            }
+
+            // Save the updated attendees list back to local storage
+            localStorage.setItem('attendees', JSON.stringify(attendees));
+        }
+    </script>
+</body>
+</html>

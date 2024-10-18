@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check Attendance</title>
+    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script> <!-- Add QR Code Scanner Library -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+            margin: 0;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: auto;
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 4px;
+            width: 100%;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .profile {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+        .profile-info {
+            display: flex;
+            align-items: center;
+        }
+        .profile img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+        .present {
+            color: green;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .absent {
+            color: red;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        #dateTime {
+            margin-bottom: 10px;
+            font-size: 16px;
+            color: #555;
+        }
+        #profileName {
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        #profilePosition {
+            font-size: 12px;
+            color: #333;
+            margin-right: 10px;
+        }
+        #profileTimestamp {
+            font-size: 12px;
+            color: #777;
+        }
+        #qr-reader {
+            width: 100%;
+            margin-top: 10px;
+        }
+        #qr-reader-results {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Check Attendance</h1>
+        <div id="dateTime"></div> <!-- Date and time display -->
+        <input type="text" id="codeInput" placeholder="Enter your code" />
+        <button onclick="checkAttendance()">Check</button>
+        <button id="homeButton" onclick="location.href='index.html'">Home</button>
+
+        <!-- QR Code Reader Section -->
+        <div id="qr-reader" style="width: 100%;"></div>
+        <div id="qr-reader-results"></div>
+        <button id="startQRScanner" onclick="startScanner()">Start QR Code Scanner</button>
+
+        <div id="profile" class="profile">
+            <div class="profile-info">
+                <img id="profilePicture" src="" alt="Profile Picture" />
+                <div id="profileName"></div>
+                <div id="profilePosition"></div>
+                <div id="profileStatus" class="present"></div>
+            </div>
+            <div id="profileTimestamp"></div>
+        </div>
+    </div>
+
+    <script>
+        // Function to display current date and time
+        function displayDateTime() {
+            const now = new Date();
+            document.getElementById('dateTime').textContent = now.toLocaleString(); // Show current date/time
+        }
+
+        // Function to check attendance
+        function checkAttendance() {
+            const code = document.getElementById('codeInput').value; // Get code from input
+            const profile = JSON.parse(localStorage.getItem(code)); // Get profile by code
+
+            if (profile) {
+                document.getElementById('profileName').textContent = profile.name;
+                document.getElementById('profilePosition').textContent = profile.position; 
+                document.getElementById('profilePicture').src = profile.picture;
+
+                const now = new Date().toLocaleTimeString(); // Get only the time
+                profile.present = true; // Set present status
+                profile.timestamp = now; // Update timestamp
+
+                // Save the updated profile back to local storage
+                localStorage.setItem(code, JSON.stringify(profile));
+
+                const statusElement = document.getElementById('profileStatus');
+                statusElement.textContent = 'Present';
+                statusElement.className = 'present';
+                document.getElementById('profileTimestamp').textContent = now;
+                document.getElementById('profile').style.display = 'flex';
+            } else {
+                alert('No profile found with this code.');
+            }
+        }
+
+        // Function to start QR Code scanner
+        function startScanner() {
+            const qrCodeReader = new Html5Qrcode("qr-reader"); // Initialize QR scanner
+
+            qrCodeReader.start(
+                { facingMode: "environment" }, // Use rear camera
+                {
+                    fps: 10, // Scans per second
+                    qrbox: 250 // Size of the scanning box
+                },
+                qrCodeSuccessCallback,
+                qrCodeErrorCallback
+            ).catch(err => {
+                console.log(`Error starting QR Code Scanner: ${err}`);
+                alert("Error accessing the camera. Please make sure you have granted camera access and are using a secure (HTTPS) connection.");
+            });
+        }
+
+        function qrCodeSuccessCallback(decodedText, decodedResult) {
+            // Display the scanned QR code content
+            document.getElementById('qr-reader-results').textContent = `Scanned Code: ${decodedText}`;
+            document.getElementById('codeInput').value = decodedText; // Automatically fill the input with the scanned code
+            checkAttendance(); // Automatically check attendance with the scanned code
+
+            // Stop the scanner after scanning the QR code
+            Html5Qrcode.getCameras().then(cameras => {
+                if (cameras && cameras.length) {
+                    const cameraId = cameras[0].id;
+                    Html5Qrcode.stop(cameraId);
+                }
+            }).catch(err => {
+                console.log(`Error stopping the camera: ${err}`);
+            });
+        }
+
+        function qrCodeErrorCallback(errorMessage) {
+            // Handle QR code scan errors or failures
+            console.log(`QR Code Error: ${errorMessage}`);
+        }
+
+        // Load date and time on page load
+        window.onload = function () {
+            displayDateTime();
+        };
+    </script>
+</body>
+</html>

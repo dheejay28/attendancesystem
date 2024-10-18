@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+        button {
+            background-color: #525457;
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 5px 0;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #272828;
+        }
+        h1 {
+            margin: 0 0 20px;
+        }
+        img.logo {
+            width: 100px; /* Adjust logo width */
+            height: auto; /* Maintain aspect ratio */
+            margin-bottom: 20px; /* Spacing below logo */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+    <img src="logo.png" alt="Logo" class="logo">
+        <h1>Admin Dashboard</h1>
+        <button onclick="location.href='generate-qr.html'">Generate Code</button>
+        <button onclick="location.href='profile.html'">View Profiles</button> <!-- Link to profiles page -->
+        <button onclick="logout()">Log Out</button>
+    </div>
+
+    <script>
+        function loadUsers() {
+            const userList = document.getElementById('userList');
+            userList.innerHTML = ''; // Clear the list
+
+            // Iterate through local storage to find user profiles
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                const profileData = JSON.parse(localStorage.getItem(key));
+
+                if (profileData) {
+                    const listItem = document.createElement('li');
+                    listItem.innerHTML = `
+                        ${profileData.name}
+                        <button onclick="removeUser('${key}')">Remove</button>
+                    `;
+                    userList.appendChild(listItem); // Append list item to the user list
+                }
+            }
+        }
+
+        function removeUser(key) {
+            localStorage.removeItem(key); // Remove from local storage
+            loadUsers(); // Refresh the user list
+            alert('User removed successfully.'); // Alert for user removal
+        }
+
+        function logout() {
+            window.location.href = 'attendees.html'; // Redirect to login page
+        }
+
+        // Load users on page load if needed
+        // window.onload = loadUsers;
+    </script>
+</body>
+</html>
